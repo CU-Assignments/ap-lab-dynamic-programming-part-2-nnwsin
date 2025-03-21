@@ -1,0 +1,88 @@
+class Solution {
+    public int lengthOfLIS(int[] nums) {
+        List<Integer> subsequence = new ArrayList<>();
+
+        for (int num : nums) {
+            int idx = Collections.binarySearch(subsequence, num);
+            if (idx < 0) idx = -(idx + 1); 
+            if (idx < subsequence.size()) {
+                subsequence.set(idx, num); 
+            } else {
+                subsequence.add(num); 
+            }
+        }
+
+        return subsequence.size();
+    }
+}
+
+
+//word break 
+
+class Solution {
+    public boolean wordBreak(String s, List<String> wordDict) {
+        return recWay1(s, wordDict);
+    }
+
+    boolean recWay2(String s, List<String> wordDict) {
+        Boolean[] memo = new Boolean[s.length() + 1];
+        return wordBreak2(s, new HashSet<>(wordDict), 0, memo);
+    }
+
+    boolean wordBreak2(String s, Set<String> wordDict, int k, Boolean[] memo) {
+        int n = s.length();
+        if (k == n) return true;
+
+        if (memo[k] != null) return memo[k];
+
+        for (int i=k + 1; i<=n; i++) {
+            String word = s.substring(k, i);
+            if (wordDict.contains(word) && wordBreak2(s, wordDict, i, memo)) {
+                return memo[k] = true;
+            }
+        }
+
+        return memo[k] = false;
+    }
+
+    boolean recWay1(String s, List<String> wordDict) {
+        Boolean[] memo = new Boolean[s.length() + 1];
+        return wordBreak(s, wordDict, 0, memo);
+    }
+    
+    boolean wordBreak(String s, List<String> wordDict, int k, Boolean[] memo) {
+        if (k == s.length()) {
+            return true;
+        }
+        
+        if (memo[k] != null) {
+            return memo[k];
+        }
+        
+        for (int i=0; i<wordDict.size(); i++) {
+            String word = wordDict.get(i);
+            if (s.startsWith(word, k)) {
+                if(wordBreak(s, wordDict, k + word.length(), memo)) return memo[k] = true;
+            }
+        }
+                   
+        return memo[k] = false;
+    }
+}
+
+
+// decode ways
+
+	public int numDecodings(String s) {
+        return s.length()==0?0:numDecodings(0,s);      
+    }
+    private int numDecodings(int p, String s) {
+        int n=s.length();
+        if(p==n) return 1;
+        if(s.charAt(p)=='0') return 0;
+        int res=numDecodings(p+1,s);
+        if(p<n-1&&(s.charAt(p)=='1'||s.charAt(p)=='2'&&s.charAt(p+1)<'7')) 
+			res+=numDecodings(p+2,s);
+        return res;
+    }
+}
